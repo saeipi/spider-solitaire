@@ -254,7 +254,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3d87f53aac5a424e878c268901b071d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topRightPosition: {x: -7.75, y: 3.6, z: 0}
+  topRightPosition: {x: -7.85, y: 3.7, z: 0}
   cardOffset: {x: 1.75, y: 0.45, z: 0}
   deckPosition: {x: 7.75, y: -5.25, z: 0}
   deckOffset: {x: -0.25, y: 0, z: 0}
