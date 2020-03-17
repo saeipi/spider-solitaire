@@ -14,6 +14,7 @@ public class Game : MonoBehaviour
     [SerializeField] private Card cardPrefab;
     [SerializeField] private Positioner positioner;
     private List<Card>[] stacks;
+    private List<Card>[] decks;
 
     void Start()
     {
@@ -23,9 +24,10 @@ public class Game : MonoBehaviour
     private void GenerateCards()
     {
         stacks = Enumerable.Repeat(new List<Card>(), 10).ToArray();
+        decks = Enumerable.Repeat(new List<Card>(), 5).ToArray();
 
         List<Global.Suits> suitPool = new List<Global.Suits>();
-        switch(difficulty)
+        switch (difficulty)
         {
             case Difficulty.Easy:
                 suitPool.AddRange(Enumerable.Repeat(Global.Suits.Spades, 8));
@@ -46,26 +48,48 @@ public class Game : MonoBehaviour
         int[] cardDistribution = Enumerable.Range(0, 104).OrderBy(x => rand.NextDouble()).ToArray();
 
         int cardIndex = 103;
+
+        while (cardIndex > 53)
+        {
+            foreach (var it in decks.Select((x, y) => new { Value = x, Index = y }))
+            {
+                for(int i = 0; i < 10; i++)
+                {
+                    Card newCard = GenerateCard(cardIndex, cardDistribution, suitPool);
+                    positioner.PutIntoDeck(ref newCard, it.Index);
+                    it.Value.Add(newCard);
+                    cardIndex--;
+                }
+            }
+            
+        }
+            
         int row = 0;
-        while(cardIndex >= 0)
+        while (cardIndex > 0)
         {
             foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
             {
-                var stats = new CardStats();
-                stats.denomination = cardDistribution[cardIndex] % 13;
-                int suitAssignment = (int)Mathf.Floor(cardDistribution[cardIndex] / 13.0f);
-                stats.suit = suitPool[suitAssignment];
-                stats.turned = false;
-
-                var newCard = Instantiate(cardPrefab);
-                newCard.InitializeCard(stats);
+                Card newCard = GenerateCard(cardIndex, cardDistribution, suitPool);
                 positioner.MoveCard(ref newCard, it.Index, row);
                 it.Value.Add(newCard);
 
+                if (cardIndex < 10) newCard.TurnCard();
+                if (cardIndex == 0) break;
                 cardIndex--;
-                if(cardIndex == -1) break;
             }
             row++;
         }
+    }
+
+    private Card GenerateCard(int cardIndex, int[] cardDistribution, List<Global.Suits> suitPool) {
+        var stats = new CardStats();
+        stats.denomination = cardDistribution[cardIndex] % 13;
+        int suitAssignment = (int)Mathf.Floor(cardDistribution[cardIndex] / 13.0f);
+        stats.suit = suitPool[suitAssignment];
+        stats.turned = false;
+
+        var newCard = Instantiate(cardPrefab);
+        newCard.InitializeCard(stats);
+        return newCard;
     }
 }

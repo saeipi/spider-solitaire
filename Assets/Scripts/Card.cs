@@ -16,11 +16,11 @@ public class Card : MonoBehaviour
     {
         this.stats = stats;
 
-        switch(stats.suit)
+        switch (stats.suit)
         {
             case Global.Suits.Hearts:
             case Global.Suits.Diamonds:
-                foreach(var suit in suits)
+                foreach (var suit in suits)
                     suit.sprite = stats.suit == Global.Suits.Hearts ? hearts : diamonds;
                 foreach (var number in numbers)
                     number.color = Color.red;
@@ -34,7 +34,7 @@ public class Card : MonoBehaviour
                 break;
         }
 
-        foreach(var number in numbers)
+        foreach (var number in numbers)
             number.text = Global.denominations[stats.denomination];
     }
 
