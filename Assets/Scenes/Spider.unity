@@ -255,7 +255,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   topRightPosition: {x: -7.75, y: 3.6, z: 0}
-  cardOffset: {x: 1.75, y: 0.65, z: 0}
+  cardOffset: {x: 1.75, y: 0.45, z: 0}
 --- !u!1 &2118507260
 GameObject:
   m_ObjectHideFlags: 0

@@ -20,7 +20,6 @@ public class Card : MonoBehaviour
         {
             case Global.Suits.Hearts:
             case Global.Suits.Diamonds:
-                background.sprite = redBackground;
                 foreach(var suit in suits)
                     suit.sprite = stats.suit == Global.Suits.Hearts ? hearts : diamonds;
                 foreach (var number in numbers)
@@ -28,7 +27,6 @@ public class Card : MonoBehaviour
                 break;
             case Global.Suits.Clubs:
             case Global.Suits.Spades:
-                background.sprite = blackBackground;
                 foreach (var suit in suits)
                     suit.sprite = stats.suit == Global.Suits.Clubs ? clubs : spades;
                 foreach (var number in numbers)
@@ -38,5 +36,28 @@ public class Card : MonoBehaviour
 
         foreach(var number in numbers)
             number.text = Global.denominations[stats.denomination];
+    }
+
+    public void TurnCard()
+    {
+        switch (stats.suit)
+        {
+            case Global.Suits.Hearts:
+            case Global.Suits.Diamonds:
+                background.sprite = redBackground;
+                break;
+            case Global.Suits.Clubs:
+            case Global.Suits.Spades:
+                background.sprite = blackBackground;
+                break;
+        }
+
+        foreach (var number in numbers)
+            number.gameObject.SetActive(true);
+
+        foreach (var suit in suits)
+            suit.gameObject.SetActive(true);
+
+        stats.turned = true;
     }
 }
