@@ -12,12 +12,12 @@ public class Positioner : MonoBehaviour
     public void MoveCard(ref Card card, int stack, int row)
     {
         card.transform.position = topRightPosition;
-        card.transform.Translate(cardOffset.x * stack, -cardOffset.y * row, 0);
+        card.transform.Translate(cardOffset.x * stack, -cardOffset.y * row, -0.1f * row);
     }
 
     public void PutIntoDeck(ref Card card, int deck)
     {
         card.transform.position = deckPosition;
-        card.transform.Translate(deckOffset.x * deck, 0, 0);
+        card.transform.Translate(deckOffset.x * deck, 0, -0.1f * deck);
     }
 }

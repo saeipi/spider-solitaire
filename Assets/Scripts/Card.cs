@@ -60,4 +60,14 @@ public class Card : MonoBehaviour
 
         stats.turned = true;
     }
+
+    void OnMouseOver()
+    {
+        background.color = Color.yellow;
+    }
+
+    void OnMouseExit()
+    {
+        background.color = Color.white;
+    }
 }
