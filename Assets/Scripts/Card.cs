@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class Card : MonoBehaviour
 {
-    [SerializeField] private Image suit, background;
+    [SerializeField] private Image background;
+    [SerializeField] private Image[] suits;
     [SerializeField] private Text[] numbers;
     [SerializeField] private Sprite hearts, clubs, diamonds, spades;
     [SerializeField] private Sprite redBackground, blackBackground;
@@ -19,15 +20,19 @@ public class Card : MonoBehaviour
         {
             case Global.Suits.Hearts:
             case Global.Suits.Diamonds:
-                suit.sprite = stats.suit == Global.Suits.Hearts ? hearts : diamonds;
                 background.sprite = redBackground;
-                foreach (var number in numbers) number.color = Color.red;
+                foreach(var suit in suits)
+                    suit.sprite = stats.suit == Global.Suits.Hearts ? hearts : diamonds;
+                foreach (var number in numbers)
+                    number.color = Color.red;
                 break;
             case Global.Suits.Clubs:
             case Global.Suits.Spades:
-                suit.sprite = stats.suit == Global.Suits.Clubs ? clubs : spades;
                 background.sprite = blackBackground;
-                foreach (var number in numbers) number.color = Color.black;
+                foreach (var suit in suits)
+                    suit.sprite = stats.suit == Global.Suits.Clubs ? clubs : spades;
+                foreach (var number in numbers)
+                    number.color = Color.black;
                 break;
         }
 
