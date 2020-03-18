@@ -268,9 +268,8 @@ public class Game : MonoSingleton<Game>
 
     public bool CheckMoveValidity(Card movedCard, StackHeader stackHeader)
     {
-        /* card must be a king and the stack in question empty */
-        return stacks[stackHeader.Stack].Count == 0
-            && movedCard.Stats.denomination == Global.denominations.Length - 1;
+        /* stack in question must be empty */
+        return stacks[stackHeader.Stack].Count == 0;
     }
 
     public bool IsCardStackable(Card topCard, Card bottomCard)
