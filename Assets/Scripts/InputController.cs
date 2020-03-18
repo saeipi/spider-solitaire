@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputController : MonoBehaviour
+[RequireComponent(typeof(Game))]
+public class InputController : MonoSingleton<InputController>
 {
-    [SerializeField] private Game game;
     private Card draggedCard;
     private List<Card> draggedCardChildren;
     private Vector3 draggedCardOriginalPosition;
@@ -21,13 +21,13 @@ public class InputController : MonoBehaviour
 
             if(hitCard)
             {
-                if (Input.GetMouseButtonDown(0) && game.CheckMoveValidity(hitCard))
+                if (Input.GetMouseButtonDown(0) && Game.Instance.CheckMoveValidity(hitCard))
                 {
                     draggedCard = hitCard;
                     draggedCardOriginalPosition = hitCard.transform.position;
                     hitCard.GetComponent<BoxCollider2D>().enabled = false;
 
-                    draggedCardChildren = game.GetCardChildren(draggedCard);
+                    draggedCardChildren = Game.Instance.GetCardChildren(draggedCard);
                     foreach(var children in draggedCardChildren)
                     {
                         children.transform.parent = draggedCard.transform;
@@ -42,7 +42,7 @@ public class InputController : MonoBehaviour
             bool moveAllowed = false;
             if(hitCard)
             {
-                moveAllowed = game.RequestCardMove(draggedCard, hitCard);
+                moveAllowed = Game.Instance.RequestCardMove(draggedCard, hitCard);
             }
 
             if(!hitCard || !moveAllowed)

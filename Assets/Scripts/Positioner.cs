@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Positioner : MonoBehaviour
+public class Positioner : MonoSingleton<Positioner>
 {
     [SerializeField] private Vector3 topRightPosition;
     [SerializeField] private Vector3 cardOffset;

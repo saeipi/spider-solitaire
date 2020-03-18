@@ -9,11 +9,10 @@ public enum Difficulty
 }
 
 [RequireComponent(typeof(Positioner))]
-public class Game : MonoBehaviour
+public class Game : MonoSingleton<Game>
 {
     [SerializeField] private Difficulty difficulty = Difficulty.Medium;
     [SerializeField] private Card cardPrefab;
-    [SerializeField] private Positioner positioner;
     private List<Card>[] stacks;
     private List<Card>[] decks;
 
@@ -60,7 +59,7 @@ public class Game : MonoBehaviour
                 for (int i = 0; i < 10; i++)
                 {
                     Card newCard = GenerateCard(cardIndex, cardDistribution, suitPool);
-                    positioner.PutIntoDeck(ref newCard, it.Index);
+                    Positioner.Instance.PutIntoDeck(ref newCard, it.Index);
                     it.Value.Add(newCard);
                     cardIndex--;
                 }
@@ -73,7 +72,7 @@ public class Game : MonoBehaviour
             foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
             {
                 Card newCard = GenerateCard(cardIndex, cardDistribution, suitPool);
-                positioner.MoveCard(ref newCard, it.Index, row);
+                Positioner.Instance.MoveCard(ref newCard, it.Index, row);
                 it.Value.Add(newCard);
 
                 if (cardIndex < 10) newCard.TurnCard();
@@ -139,14 +138,14 @@ public class Game : MonoBehaviour
             if (it.Value.Exists(card => card.Equals(hoveredCard)))
             {
                 /* move card */
-                positioner.MoveCard(ref movedCard, it.Index, it.Value.Count);
+                Positioner.Instance.MoveCard(ref movedCard, it.Index, it.Value.Count);
                 it.Value.Add(movedCard);
 
                 /* and all of its children */
                 while(movedCardChildren.Count > 0)
                 {
                     var movedChildren = movedCardChildren.Pop();
-                    positioner.MoveCard(ref movedChildren, it.Index, it.Value.Count);
+                    Positioner.Instance.MoveCard(ref movedChildren, it.Index, it.Value.Count);
                     it.Value.Add(movedChildren);
                 }
             }
