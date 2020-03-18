@@ -71,7 +71,8 @@ public class Card : MonoBehaviour, IEquatable<Card>
 
     void OnMouseEnter()
     {
-        background.color = Color.yellow;
+        if(Game.Instance.CheckMoveValidity(this))
+            background.color = Color.yellow;
     }
 
     void OnMouseExit()
