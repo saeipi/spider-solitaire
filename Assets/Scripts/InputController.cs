@@ -20,7 +20,7 @@ public class InputController : MonoBehaviour
 
             if(hitCard)
             {
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0) && game.CheckMoveValidity(hitCard))
                 {
                     draggedCard = hitCard;
                     draggedCardOriginalPosition = hitCard.transform.position;
@@ -29,7 +29,7 @@ public class InputController : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (draggedCard && Input.GetMouseButtonUp(0))
         {
             bool moveAllowed = false;
             if(hitCard)

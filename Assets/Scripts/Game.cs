@@ -113,15 +113,64 @@ public class Game : MonoBehaviour
 
     public void MoveCard(Card movedCard, Card hoveredCard)
     {
+        Stack<Card> movedCardChildren = new Stack<Card>();
+
         foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
         {
-            it.Value.Remove(movedCard);
-            if (it.Value.Exists(card => card.Equals(hoveredCard)))
+            if (it.Value.Exists(card => card.Equals(movedCard)))
             {
-                positioner.MoveCard(ref movedCard, it.Index, it.Value.Count);
-                it.Value.Add(movedCard);
+                var cardIndex = it.Value.IndexOf(movedCard);
+                for(int i = it.Value.Count - 1; i > cardIndex; i--)
+                {
+                    movedCardChildren.Push(it.Value[i]);
+                    it.Value.RemoveAt(i);
+                }
+                it.Value.Remove(movedCard);
             }
         }
+
+        foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
+        {
+            if (it.Value.Exists(card => card.Equals(hoveredCard)))
+            {
+                /* move card */
+                positioner.MoveCard(ref movedCard, it.Index, it.Value.Count);
+                it.Value.Add(movedCard);
+
+                /* and all of its children */
+                while(movedCardChildren.Count > 0)
+                {
+                    var movedChildren = movedCardChildren.Pop();
+                    positioner.MoveCard(ref movedChildren, it.Index, it.Value.Count);
+                    it.Value.Add(movedChildren);
+                }
+            }
+        }
+    }
+
+    public bool CheckMoveValidity(Card movedCard)
+    {
+        /* if card isn't turned, we cannot move it */
+        if (!movedCard.Stats.turned) return false;
+
+        foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
+        {
+            if (it.Value.Exists(card => card.Equals(movedCard)))
+            {
+                var cardIndex = it.Value.IndexOf(movedCard);
+
+                /* if card is at the bottom of stack, we're in the clear */
+                if (cardIndex == it.Value.Count - 1) return true;
+
+                /* otherwise, we need to check the children */
+                for(int i = cardIndex + 1; i < it.Value.Count; i++)
+                {
+                    if (!IsStackMoveable(it.Value[i - 1], it.Value[i])) return false;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     public bool CheckMoveValidity(Card movedCard, Card hoveredCard)
@@ -140,5 +189,12 @@ public class Game : MonoBehaviour
     public bool IsCardStackable(Card topCard, Card bottomCard)
     {
         return topCard.Stats.denomination == bottomCard.Stats.denomination - 1;
+    }
+
+    public bool IsStackMoveable(Card topCard, Card bottomCard)
+    {
+        /* we have to fullfill stack criteria and have matching suits */
+        return IsCardStackable(bottomCard, topCard)
+            && topCard.Stats.suit == bottomCard.Stats.suit;
     }
 }

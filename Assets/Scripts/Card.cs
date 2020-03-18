@@ -69,7 +69,7 @@ public class Card : MonoBehaviour, IEquatable<Card>
         stats.turned = true;
     }
 
-    void OnMouseOver()
+    void OnMouseEnter()
     {
         background.color = Color.yellow;
     }
