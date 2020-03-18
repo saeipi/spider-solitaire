@@ -25,7 +25,7 @@ public class Game : MonoBehaviour
     private void GenerateCards()
     {
         stacks = new List<Card>[10];
-        for(int i = 0; i < 10; i++) stacks[i] = new List<Card>();
+        for (int i = 0; i < 10; i++) stacks[i] = new List<Card>();
 
         decks = new List<Card>[5];
         for (int i = 0; i < 5; i++) decks[i] = new List<Card>();
@@ -57,7 +57,7 @@ public class Game : MonoBehaviour
         {
             foreach (var it in decks.Select((x, y) => new { Value = x, Index = y }))
             {
-                for(int i = 0; i < 10; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     Card newCard = GenerateCard(cardIndex, cardDistribution, suitPool);
                     positioner.PutIntoDeck(ref newCard, it.Index);
@@ -66,7 +66,7 @@ public class Game : MonoBehaviour
                 }
             }
         }
-            
+
         int row = 0;
         while (cardIndex > 0)
         {
@@ -84,7 +84,8 @@ public class Game : MonoBehaviour
         }
     }
 
-    private Card GenerateCard(int cardIndex, int[] cardDistribution, List<Global.Suits> suitPool) {
+    private Card GenerateCard(int cardIndex, int[] cardDistribution, List<Global.Suits> suitPool)
+    {
         var stats = new CardStats();
         stats.denomination = cardDistribution[cardIndex] % 13;
         int suitAssignment = (int)Mathf.Floor(cardDistribution[cardIndex] / 13.0f);
@@ -99,17 +100,9 @@ public class Game : MonoBehaviour
 
     public bool RequestCardMove(Card movedCard, Card hoveredCard)
     {
-        if(CheckMoveValidity(movedCard, hoveredCard))
+        if (CheckMoveValidity(movedCard, hoveredCard))
         {
-            foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
-            {
-                it.Value.Remove(movedCard);
-                if(it.Value.Exists(card => card.Equals(hoveredCard)))
-                {
-                    positioner.MoveCard(ref movedCard, it.Index, it.Value.Count);
-                    it.Value.Add(movedCard);
-                }
-            }
+            MoveCard(movedCard, hoveredCard);
             return true;
         }
         else
@@ -118,8 +111,34 @@ public class Game : MonoBehaviour
         }
     }
 
+    public void MoveCard(Card movedCard, Card hoveredCard)
+    {
+        foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
+        {
+            it.Value.Remove(movedCard);
+            if (it.Value.Exists(card => card.Equals(hoveredCard)))
+            {
+                positioner.MoveCard(ref movedCard, it.Index, it.Value.Count);
+                it.Value.Add(movedCard);
+            }
+        }
+    }
+
     public bool CheckMoveValidity(Card movedCard, Card hoveredCard)
     {
-        return true;
+        foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
+        {
+            if (it.Value.Exists(card => card.Equals(hoveredCard)))
+            {
+                var topCard = it.Value.Last();
+                return IsCardStackable(movedCard, topCard);
+            }
+        }
+        return false;
+    }
+
+    public bool IsCardStackable(Card topCard, Card bottomCard)
+    {
+        return topCard.Stats.denomination == bottomCard.Stats.denomination - 1;
     }
 }

@@ -12,6 +12,13 @@ public class Card : MonoBehaviour, IEquatable<Card>
     [SerializeField] private Sprite hearts, clubs, diamonds, spades;
     [SerializeField] private Sprite redBackground, blackBackground;
     private CardStats stats;
+    public CardStats Stats
+    {
+        get
+        {
+            return stats;
+        }
+    }
 
     public void InitializeCard(CardStats stats)
     {
