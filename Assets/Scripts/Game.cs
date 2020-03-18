@@ -126,6 +126,11 @@ public class Game : MonoBehaviour
                     it.Value.RemoveAt(i);
                 }
                 it.Value.Remove(movedCard);
+
+                if(it.Value.Count > 0 && !it.Value.Last().Stats.turned)
+                {
+                    it.Value.Last().TurnCard();
+                }
             }
         }
 
