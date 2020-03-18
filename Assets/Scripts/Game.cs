@@ -314,6 +314,7 @@ public class Game : MonoSingleton<Game>
                 Positioner.Instance.MoveCard(ref dealedCard, i, stacks[i].Count);
                 dealedCard.TurnCard();
                 stacks[i].Add(dealedCard);
+                CheckTableau(i);
             }
         }
     }
