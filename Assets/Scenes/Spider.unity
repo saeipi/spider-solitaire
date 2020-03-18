@@ -205,6 +205,7 @@ GameObject:
   - component: {fileID: 588318839}
   - component: {fileID: 588318838}
   - component: {fileID: 588318840}
+  - component: {fileID: 588318841}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -258,6 +259,19 @@ MonoBehaviour:
   cardOffset: {x: 1.75, y: 0.45, z: 0}
   deckPosition: {x: 7.75, y: -5.25, z: 0}
   deckOffset: {x: -0.25, y: 0, z: 0}
+--- !u!114 &588318841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 588318837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e072fb60a0e0364428affa727de44227, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  game: {fileID: 588318838}
 --- !u!1 &2118507260
 GameObject:
   m_ObjectHideFlags: 0

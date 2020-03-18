@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
-public class Card : MonoBehaviour
+public class Card : MonoBehaviour, IEquatable<Card>
 {
     [SerializeField] private Image background;
     [SerializeField] private Image[] suits;
@@ -69,5 +70,10 @@ public class Card : MonoBehaviour
     void OnMouseExit()
     {
         background.color = Color.white;
+    }
+
+    public bool Equals(Card otherCard)
+    {
+        return this.stats.id == otherCard.stats.id;
     }
 }

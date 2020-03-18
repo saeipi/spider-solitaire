@@ -8,6 +8,7 @@ public enum Difficulty
     Easy, Medium, Hard
 }
 
+[RequireComponent(typeof(Positioner))]
 public class Game : MonoBehaviour
 {
     [SerializeField] private Difficulty difficulty = Difficulty.Medium;
@@ -23,8 +24,11 @@ public class Game : MonoBehaviour
 
     private void GenerateCards()
     {
-        stacks = Enumerable.Repeat(new List<Card>(), 10).ToArray();
-        decks = Enumerable.Repeat(new List<Card>(), 5).ToArray();
+        stacks = new List<Card>[10];
+        for(int i = 0; i < 10; i++) stacks[i] = new List<Card>();
+
+        decks = new List<Card>[5];
+        for (int i = 0; i < 5; i++) decks[i] = new List<Card>();
 
         List<Global.Suits> suitPool = new List<Global.Suits>();
         switch (difficulty)
@@ -61,7 +65,6 @@ public class Game : MonoBehaviour
                     cardIndex--;
                 }
             }
-            
         }
             
         int row = 0;
@@ -87,9 +90,36 @@ public class Game : MonoBehaviour
         int suitAssignment = (int)Mathf.Floor(cardDistribution[cardIndex] / 13.0f);
         stats.suit = suitPool[suitAssignment];
         stats.turned = false;
+        stats.id = cardIndex;
 
         var newCard = Instantiate(cardPrefab);
         newCard.InitializeCard(stats);
         return newCard;
+    }
+
+    public bool RequestCardMove(Card movedCard, Card hoveredCard)
+    {
+        if(CheckMoveValidity(movedCard, hoveredCard))
+        {
+            foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
+            {
+                it.Value.Remove(movedCard);
+                if(it.Value.Exists(card => card.Equals(hoveredCard)))
+                {
+                    positioner.MoveCard(ref movedCard, it.Index, it.Value.Count);
+                    it.Value.Add(movedCard);
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public bool CheckMoveValidity(Card movedCard, Card hoveredCard)
+    {
+        return true;
     }
 }
