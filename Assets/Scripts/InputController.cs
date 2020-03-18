@@ -14,10 +14,12 @@ public class InputController : MonoSingleton<InputController>
         Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero);
         Card hitCard = null;
+        StackHeader hitStackHeader = null;
 
         if (hit)
         {
             hitCard = hit.transform.gameObject.GetComponent<Card>();
+            hitStackHeader = hit.transform.gameObject.GetComponent<StackHeader>();
 
             if(hitCard)
             {
@@ -44,8 +46,12 @@ public class InputController : MonoSingleton<InputController>
             {
                 moveAllowed = Game.Instance.RequestCardMove(draggedCard, hitCard);
             }
+            else if(hitStackHeader)
+            {
+                moveAllowed = Game.Instance.RequestCardMove(draggedCard, hitStackHeader);
+            }
 
-            if(!hitCard || !moveAllowed)
+            if((!hitCard && !hitStackHeader) || !moveAllowed)
             {
                 draggedCard.transform.position = draggedCardOriginalPosition;
             }

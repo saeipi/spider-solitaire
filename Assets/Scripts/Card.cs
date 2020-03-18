@@ -20,7 +20,7 @@ public class Card : MonoBehaviour, IEquatable<Card>
         }
     }
 
-    public void InitializeCard(CardStats stats)
+    public void Initialize(CardStats stats)
     {
         this.stats = stats;
 

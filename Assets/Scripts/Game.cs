@@ -13,12 +13,24 @@ public class Game : MonoSingleton<Game>
 {
     [SerializeField] private Difficulty difficulty = Difficulty.Medium;
     [SerializeField] private Card cardPrefab;
+    [SerializeField] private StackHeader stackHeaderPrefab;
     private List<Card>[] stacks;
     private List<List<Card>> decks;
 
     void Start()
     {
+        SpawnStackHeaders();
         GenerateCards();
+    }
+
+    private void SpawnStackHeaders()
+    {
+        for(int i = 0; i < 10; i++)
+        {
+            StackHeader header = Instantiate(stackHeaderPrefab);
+            header.Initialize(i);
+            Positioner.Instance.PositionStackHeader(header, i);
+        }
     }
 
     private void GenerateCards()
@@ -86,14 +98,14 @@ public class Game : MonoSingleton<Game>
     private Card GenerateCard(int cardIndex, int[] cardDistribution, List<Global.Suits> suitPool)
     {
         var stats = new CardStats();
-        stats.denomination = cardDistribution[cardIndex] % 13;
-        int suitAssignment = (int)Mathf.Floor(cardDistribution[cardIndex] / 13.0f);
+        stats.denomination = cardDistribution[cardIndex] % Global.denominations.Length;
+        int suitAssignment = (int)Mathf.Floor(cardDistribution[cardIndex] / (float)Global.denominations.Length);
         stats.suit = suitPool[suitAssignment];
         stats.turned = false;
         stats.id = cardIndex;
 
         var newCard = Instantiate(cardPrefab);
-        newCard.InitializeCard(stats);
+        newCard.Initialize(stats);
         return newCard;
     }
 
@@ -110,7 +122,20 @@ public class Game : MonoSingleton<Game>
         }
     }
 
-    public void MoveCard(Card movedCard, Card hoveredCard)
+    public bool RequestCardMove(Card movedCard, StackHeader stackHeader)
+    {
+        if(CheckMoveValidity(movedCard, stackHeader))
+        {
+            MoveCard(movedCard, stackHeader);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private Stack<Card> CutCardChildren(Card movedCard)
     {
         Stack<Card> movedCardChildren = new Stack<Card>();
 
@@ -119,19 +144,26 @@ public class Game : MonoSingleton<Game>
             if (it.Value.Exists(card => card.Equals(movedCard)))
             {
                 var cardIndex = it.Value.IndexOf(movedCard);
-                for(int i = it.Value.Count - 1; i > cardIndex; i--)
+                for (int i = it.Value.Count - 1; i > cardIndex; i--)
                 {
                     movedCardChildren.Push(it.Value[i]);
                     it.Value.RemoveAt(i);
                 }
                 it.Value.Remove(movedCard);
 
-                if(it.Value.Count > 0 && !it.Value.Last().Stats.turned)
+                if (it.Value.Count > 0 && !it.Value.Last().Stats.turned)
                 {
                     it.Value.Last().TurnCard();
                 }
             }
         }
+
+        return movedCardChildren;
+    }
+
+    public void MoveCard(Card movedCard, Card hoveredCard)
+    {
+        var movedCardChildren = CutCardChildren(movedCard);
 
         foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
         {
@@ -148,7 +180,27 @@ public class Game : MonoSingleton<Game>
                     Positioner.Instance.MoveCard(ref movedChildren, it.Index, it.Value.Count);
                     it.Value.Add(movedChildren);
                 }
+
+                /* check whether we have created a tableau */
+                CheckTableau(it.Index);
             }
+        }
+    }
+
+    public void MoveCard(Card movedCard, StackHeader stackHeader)
+    {
+        var movedCardChildren = CutCardChildren(movedCard);
+
+        /* move card */
+        Positioner.Instance.MoveCard(ref movedCard, stackHeader.Stack, 0);
+        stacks[stackHeader.Stack].Add(movedCard);
+
+        /* and all of its children */
+        while (movedCardChildren.Count > 0)
+        {
+            var movedChildren = movedCardChildren.Pop();
+            Positioner.Instance.MoveCard(ref movedChildren, stackHeader.Stack, stacks[stackHeader.Stack].Count);
+            stacks[stackHeader.Stack].Add(movedChildren);
         }
     }
 
@@ -188,6 +240,13 @@ public class Game : MonoSingleton<Game>
             }
         }
         return false;
+    }
+
+    public bool CheckMoveValidity(Card movedCard, StackHeader stackHeader)
+    {
+        /* card must be a king and the stack in question empty */
+        return stacks[stackHeader.Stack].Count == 0
+            && movedCard.Stats.denomination == Global.denominations.Length - 1;
     }
 
     public bool IsCardStackable(Card topCard, Card bottomCard)
@@ -233,6 +292,33 @@ public class Game : MonoSingleton<Game>
                 dealedCard.TurnCard();
                 stacks[i].Add(dealedCard);
             }
+        }
+    }
+
+    public bool CheckTableau(int stack)
+    {
+        int stackCount = stacks[stack].Count;
+
+        /* tableau consists of a complete set of cards (A-K) */
+        if (stackCount < Global.denominations.Length) return false;
+
+        for(int i = stackCount - 1; i < stackCount - Global.denominations.Length - 1; i--)
+        {
+            if (!IsStackMoveable(stacks[stack][i - 1], stacks[stack][i])) return false;
+        }
+
+        RemoveTableau(stack);
+        return true;
+    }
+
+    public void RemoveTableau(int stack)
+    {
+        int stackCount = stacks[stack].Count;
+        for (int i = stackCount - 1; i < stackCount - 14; i--)
+        {
+            var removedCard = stacks[stack][i];
+            stacks[stack].RemoveAt(i);
+            Destroy(removedCard.gameObject);
         }
     }
 }

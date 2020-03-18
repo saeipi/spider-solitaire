@@ -9,6 +9,12 @@ public class Positioner : MonoSingleton<Positioner>
     [SerializeField] private Vector3 deckPosition;
     [SerializeField] private Vector3 deckOffset;
 
+    public void PositionStackHeader(StackHeader stackHeader, int stack)
+    {
+        stackHeader.transform.position = topRightPosition;
+        stackHeader.transform.Translate(cardOffset.x * stack, 0, 1.0f);
+    }
+
     public void MoveCard(ref Card card, int stack, int row)
     {
         card.transform.position = topRightPosition;
