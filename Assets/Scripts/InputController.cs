@@ -64,5 +64,10 @@ public class InputController : MonoSingleton<InputController>
         {
             draggedCard.gameObject.transform.position = new Vector3(ray.x, ray.y, -5.0f);
         }
+
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            Game.Instance.DealFromDeck();
+        }
     }
 }

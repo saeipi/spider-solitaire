@@ -14,7 +14,7 @@ public class Game : MonoSingleton<Game>
     [SerializeField] private Difficulty difficulty = Difficulty.Medium;
     [SerializeField] private Card cardPrefab;
     private List<Card>[] stacks;
-    private List<Card>[] decks;
+    private List<List<Card>> decks;
 
     void Start()
     {
@@ -26,8 +26,8 @@ public class Game : MonoSingleton<Game>
         stacks = new List<Card>[10];
         for (int i = 0; i < 10; i++) stacks[i] = new List<Card>();
 
-        decks = new List<Card>[5];
-        for (int i = 0; i < 5; i++) decks[i] = new List<Card>();
+        decks = new List<List<Card>>();
+        for (int i = 0; i < 5; i++) decks.Add(new List<Card>());
 
         List<Global.Suits> suitPool = new List<Global.Suits>();
         switch (difficulty)
@@ -217,5 +217,22 @@ public class Game : MonoSingleton<Game>
             }
         }
         return children;
+    }
+
+    public void DealFromDeck()
+    {
+        if(decks.Count > 0)
+        {
+            var dealedDeck = decks.Last();
+            decks.RemoveAt(decks.Count - 1);
+
+            for(int i = 0; i < 10; i++)
+            {
+                var dealedCard = dealedDeck[i];
+                Positioner.Instance.MoveCard(ref dealedCard, i, stacks[i].Count);
+                dealedCard.TurnCard();
+                stacks[i].Add(dealedCard);
+            }
+        }
     }
 }
