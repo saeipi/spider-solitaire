@@ -71,20 +71,20 @@ public class InputController : MonoSingleton<InputController>
             draggedCard.gameObject.transform.position = new Vector3(ray.x, ray.y, -5.0f);
         }
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetButtonDown("Deal From Deck"))
         {
             Game.Instance.DealFromDeck();
         }
 
-        if(Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetButtonDown("Reset Game (Easy)"))
         {
             Game.Instance.ResetGame(Difficulty.Easy);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (Input.GetButtonDown("Reset Game (Medium)"))
         {
             Game.Instance.ResetGame(Difficulty.Medium);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        else if (Input.GetButtonDown("Reset Game (Hard)"))
         {
             Game.Instance.ResetGame(Difficulty.Hard);
         }
