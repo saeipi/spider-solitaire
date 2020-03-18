@@ -6,6 +6,7 @@ public class InputController : MonoBehaviour
 {
     [SerializeField] private Game game;
     private Card draggedCard;
+    private List<Card> draggedCardChildren;
     private Vector3 draggedCardOriginalPosition;
 
     void Update()
@@ -25,6 +26,13 @@ public class InputController : MonoBehaviour
                     draggedCard = hitCard;
                     draggedCardOriginalPosition = hitCard.transform.position;
                     hitCard.GetComponent<BoxCollider2D>().enabled = false;
+
+                    draggedCardChildren = game.GetCardChildren(draggedCard);
+                    foreach(var children in draggedCardChildren)
+                    {
+                        children.transform.parent = draggedCard.transform;
+                        children.GetComponent<BoxCollider2D>().enabled = false;
+                    }
                 }
             }
         }
@@ -40,6 +48,12 @@ public class InputController : MonoBehaviour
             if(!hitCard || !moveAllowed)
             {
                 draggedCard.transform.position = draggedCardOriginalPosition;
+            }
+
+            foreach (var children in draggedCardChildren)
+            {
+                children.transform.parent = null;
+                children.GetComponent<BoxCollider2D>().enabled = true;
             }
 
             draggedCard.GetComponent<BoxCollider2D>().enabled = true;

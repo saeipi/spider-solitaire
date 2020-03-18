@@ -202,4 +202,21 @@ public class Game : MonoBehaviour
         return IsCardStackable(bottomCard, topCard)
             && topCard.Stats.suit == bottomCard.Stats.suit;
     }
+
+    public List<Card> GetCardChildren(Card parentCard)
+    {
+        List<Card> children = new List<Card>();
+        foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
+        {
+            if (it.Value.Exists(card => card.Equals(parentCard)))
+            {
+                var cardIndex = it.Value.IndexOf(parentCard);
+                for (int i = it.Value.Count - 1; i > cardIndex; i--)
+                {
+                    children.Add(it.Value[i]);
+                }
+            }
+        }
+        return children;
+    }
 }
