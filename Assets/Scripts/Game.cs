@@ -302,7 +302,7 @@ public class Game : MonoSingleton<Game>
         /* tableau consists of a complete set of cards (A-K) */
         if (stackCount < Global.denominations.Length) return false;
 
-        for(int i = stackCount - 1; i < stackCount - Global.denominations.Length - 1; i--)
+        for(int i = stackCount - 1; i > stackCount - Global.denominations.Length; i--)
         {
             if (!IsStackMoveable(stacks[stack][i - 1], stacks[stack][i])) return false;
         }
@@ -314,11 +314,16 @@ public class Game : MonoSingleton<Game>
     public void RemoveTableau(int stack)
     {
         int stackCount = stacks[stack].Count;
-        for (int i = stackCount - 1; i < stackCount - 14; i--)
+        for (int i = stackCount - 1; i >= stackCount - Global.denominations.Length; i--)
         {
             var removedCard = stacks[stack][i];
             stacks[stack].RemoveAt(i);
             Destroy(removedCard.gameObject);
+        }
+
+        if(stacks[stack].Count > 0)
+        {
+            stacks[stack].Last().TurnCard();
         }
     }
 }
