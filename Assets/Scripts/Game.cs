@@ -23,6 +23,30 @@ public class Game : MonoSingleton<Game>
         GenerateCards();
     }
 
+    public void ResetGame(Difficulty difficulty)
+    {
+        this.difficulty = difficulty;
+
+        /* remove all cards */
+        foreach(var stack in stacks)
+        {
+            foreach(var card in stack)
+            {
+                Destroy(card.gameObject);
+            }
+        }
+
+        foreach (var deck in decks)
+        {
+            foreach (var card in deck)
+            {
+                Destroy(card.gameObject);
+            }
+        }
+
+        GenerateCards();
+    }
+
     private void SpawnStackHeaders()
     {
         for(int i = 0; i < 10; i++)

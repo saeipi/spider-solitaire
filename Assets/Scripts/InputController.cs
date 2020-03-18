@@ -75,5 +75,18 @@ public class InputController : MonoSingleton<InputController>
         {
             Game.Instance.DealFromDeck();
         }
+
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            Game.Instance.ResetGame(Difficulty.Easy);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            Game.Instance.ResetGame(Difficulty.Medium);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            Game.Instance.ResetGame(Difficulty.Hard);
+        }
     }
 }
