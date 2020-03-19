@@ -75,8 +75,7 @@ public class InputController : MonoSingleton<InputController>
         {
             Game.Instance.DealFromDeck();
         }
-
-        if (Input.GetButtonDown("Reset Game (Easy)"))
+        else if (Input.GetButtonDown("Reset Game (Easy)"))
         {
             Game.Instance.ResetGame(Difficulty.Easy);
         }
@@ -87,6 +86,10 @@ public class InputController : MonoSingleton<InputController>
         else if (Input.GetButtonDown("Reset Game (Hard)"))
         {
             Game.Instance.ResetGame(Difficulty.Hard);
+        }
+        else if(Input.GetButtonDown("Undo Move"))
+        {
+            Game.Instance.UndoMove();
         }
     }
 }

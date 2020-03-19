@@ -136,6 +136,7 @@ MonoBehaviour:
   spades: {fileID: 21300000, guid: 8c1bc976b8296ed42b3b27e022136195, type: 3}
   redBackground: {fileID: 21300000, guid: 47ef79e9b5853394c81fce0c3cf90e4f, type: 3}
   blackBackground: {fileID: 21300000, guid: 47899505bfe2bcf49911d83a5edcafbc, type: 3}
+  unturnedBackground: {fileID: 21300000, guid: 8544253192bd5c24596802cc4e57c988, type: 3}
 --- !u!61 &1717897656599323548
 BoxCollider2D:
   m_ObjectHideFlags: 0

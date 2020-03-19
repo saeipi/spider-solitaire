@@ -10,7 +10,7 @@ public class Card : MonoBehaviour, IEquatable<Card>
     [SerializeField] private Image[] suits;
     [SerializeField] private Text[] numbers;
     [SerializeField] private Sprite hearts, clubs, diamonds, spades;
-    [SerializeField] private Sprite redBackground, blackBackground;
+    [SerializeField] private Sprite redBackground, blackBackground, unturnedBackground;
     private CardStats stats;
     public CardStats Stats
     {
@@ -48,25 +48,32 @@ public class Card : MonoBehaviour, IEquatable<Card>
 
     public void TurnCard()
     {
-        switch (stats.suit)
+        stats.turned ^= true;
+
+        if (stats.turned)
         {
-            case Global.Suits.Hearts:
-            case Global.Suits.Diamonds:
-                background.sprite = redBackground;
-                break;
-            case Global.Suits.Clubs:
-            case Global.Suits.Spades:
-                background.sprite = blackBackground;
-                break;
+            switch (stats.suit)
+            {
+                case Global.Suits.Hearts:
+                case Global.Suits.Diamonds:
+                    background.sprite = redBackground;
+                    break;
+                case Global.Suits.Clubs:
+                case Global.Suits.Spades:
+                    background.sprite = blackBackground;
+                    break;
+            }
+        }
+        else
+        {
+            background.sprite = unturnedBackground;
         }
 
         foreach (var number in numbers)
-            number.gameObject.SetActive(true);
+            number.gameObject.SetActive(stats.turned);
 
         foreach (var suit in suits)
-            suit.gameObject.SetActive(true);
-
-        stats.turned = true;
+            suit.gameObject.SetActive(stats.turned);
     }
 
     void OnMouseEnter()

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
@@ -16,11 +15,12 @@ public class Game : MonoSingleton<Game>
     [SerializeField] private StackHeader stackHeaderPrefab;
     private List<Card>[] stacks;
     private List<List<Card>> decks;
+    private Stack<Move> pastMoves;
 
     void Start()
     {
         SpawnStackHeaders();
-        GenerateCards();
+        ResetGame(difficulty);
     }
 
     public void ResetGame(Difficulty difficulty)
@@ -28,21 +28,26 @@ public class Game : MonoSingleton<Game>
         this.difficulty = difficulty;
 
         /* remove all cards */
-        foreach(var stack in stacks)
+        if(stacks != null)
         {
-            foreach(var card in stack)
+            foreach (var stack in stacks)
             {
-                Destroy(card.gameObject);
+                foreach (var card in stack)
+                {
+                    Destroy(card.gameObject);
+                }
+            }
+
+            foreach (var deck in decks)
+            {
+                foreach (var card in deck)
+                {
+                    Destroy(card.gameObject);
+                }
             }
         }
 
-        foreach (var deck in decks)
-        {
-            foreach (var card in deck)
-            {
-                Destroy(card.gameObject);
-            }
-        }
+        pastMoves = new Stack<Move>();
 
         GenerateCards();
     }
@@ -159,7 +164,7 @@ public class Game : MonoSingleton<Game>
         }
     }
 
-    private Stack<Card> CutCardChildren(Card movedCard)
+    private Stack<Card> CutCardChildren(Card movedCard, bool undoing)
     {
         Stack<Card> movedCardChildren = new Stack<Card>();
 
@@ -175,19 +180,23 @@ public class Game : MonoSingleton<Game>
                 }
                 it.Value.Remove(movedCard);
 
+                bool cardTurned = false;
                 if (it.Value.Count > 0 && !it.Value.Last().Stats.turned)
                 {
                     it.Value.Last().TurnCard();
+                    cardTurned = true;
                 }
+
+                if(!undoing) pastMoves.Push(new Move(movedCard, it.Index, cardTurned));
             }
         }
 
         return movedCardChildren;
     }
 
-    public void MoveCard(Card movedCard, Card hoveredCard)
+    public void MoveCard(Card movedCard, Card hoveredCard, bool undoing = false)
     {
-        var movedCardChildren = CutCardChildren(movedCard);
+        var movedCardChildren = CutCardChildren(movedCard, undoing);
 
         foreach (var it in stacks.Select((x, y) => new { Value = x, Index = y }))
         {
@@ -211,12 +220,12 @@ public class Game : MonoSingleton<Game>
         }
     }
 
-    public void MoveCard(Card movedCard, StackHeader stackHeader)
+    public void MoveCard(Card movedCard, StackHeader stackHeader, bool undoing = false)
     {
-        var movedCardChildren = CutCardChildren(movedCard);
+        var movedCardChildren = CutCardChildren(movedCard, undoing);
 
         /* move card */
-        Positioner.Instance.MoveCard(ref movedCard, stackHeader.Stack, 0);
+        Positioner.Instance.MoveCard(ref movedCard, stackHeader.Stack, stacks[stackHeader.Stack].Count);
         stacks[stackHeader.Stack].Add(movedCard);
 
         /* and all of its children */
@@ -317,6 +326,19 @@ public class Game : MonoSingleton<Game>
                 CheckTableau(i);
             }
         }
+
+        pastMoves.Clear();
+    }
+
+    public void UndoMove()
+    {
+        if (pastMoves.Count == 0) return;
+        var lastMove = pastMoves.Pop();
+        StackHeader stackHeader = new StackHeader();
+        stackHeader.Initialize(lastMove.originalStack);
+        if(lastMove.cardBelowTurned)
+            stacks[lastMove.originalStack].Last().TurnCard();
+        MoveCard(lastMove.movedCard, stackHeader, true);
     }
 
     public bool CheckTableau(int stack)
@@ -349,5 +371,7 @@ public class Game : MonoSingleton<Game>
         {
             stacks[stack].Last().TurnCard();
         }
+
+        pastMoves.Clear();
     }
 }
